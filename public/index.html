@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kobo Send — Send ebooks to your Kobo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Brand -->
+    <div class="brand">
+      <span class="brand-icon">📚</span>
+      <h1>Kobo<span>Send</span></h1>
+      <p>Drop an ebook, get a code, download on Kobo</p>
+    </div>
+
+    <!-- ════════ VIEW: UPLOAD ════════ -->
+    <div id="view-upload" class="view active">
+
+      <div class="dropzone" id="dropzone">
+        <span class="dropzone-icon">📄</span>
+        <div class="dropzone-text">
+          <h2>Drop your ebook here</h2>
+          <p>or click to browse — EPUB, MOBI, PDF, CBZ up to 100 MB</p>
+        </div>
+        <input type="file" id="file-input" accept=".epub,.mobi,.pdf,.azw,.azw3,.cbz,.cbr,.fb2,.djvu,.txt">
+      </div>
+
+      <div class="file-info" id="file-info">
+        <span class="file-icon">📖</span>
+        <div class="file-details">
+          <div class="file-name" id="file-name"></div>
+          <div class="file-size" id="file-size"></div>
+        </div>
+        <button class="file-remove" id="file-remove" title="Remove file">&times;</button>
+      </div>
+
+      <div class="progress-bar" id="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-send" disabled>
+        Send to Kobo
+      </button>
+    </div>
+
+    <!-- ════════ VIEW: CODE ════════ -->
+    <div id="view-code" class="view">
+
+      <div class="code-section">
+        <div class="code-label">Your download code</div>
+        <div class="code-display" id="code-display"></div>
+        <div class="code-actions">
+          <button class="btn btn-copy" id="btn-copy">Copy code</button>
+        </div>
+      </div>
+
+      <div class="qr-section">
+        <div class="qr-label">or scan with your device</div>
+        <div class="qr-container">
+          <canvas id="qr-canvas"></canvas>
+        </div>
+      </div>
+
+      <div class="status-indicator">
+        <div class="status-badge" id="status-badge" data-status="waiting">
+          <span class="status-dot"></span>
+          <span id="status-text">Waiting for device…</span>
+        </div>
+      </div>
+
+      <div class="expiry-timer" id="expiry-timer"></div>
+
+      <button class="btn btn-secondary" id="btn-another">
+        ↑ Upload another file
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- QR Code library (lightweight, no deps) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

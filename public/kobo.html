@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kobo Send — Download</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="kobo-container">
+
+    <div class="kobo-brand">
+      <h1>Kobo<span>Send</span></h1>
+      <p>Enter your code to download</p>
+    </div>
+
+    <div class="kobo-form">
+      <input
+        type="text"
+        class="kobo-input"
+        id="kobo-code"
+        placeholder="ABC123"
+        maxlength="6"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="characters"
+        spellcheck="false"
+      >
+      <button class="kobo-btn" id="kobo-download">
+        Download ebook
+      </button>
+    </div>
+
+    <div class="kobo-status" id="kobo-status"></div>
+
+  </div>
+
+  <script>
+    (function() {
+      const codeInput = document.getElementById('kobo-code');
+      const downloadBtn = document.getElementById('kobo-download');
+      const statusEl = document.getElementById('kobo-status');
+
+      // Auto-fill from URL ?code=XXXX
+      const params = new URLSearchParams(window.location.search);
+      const urlCode = params.get('code');
+
+      if (urlCode) {
+        codeInput.value = urlCode.toUpperCase();
+        // Auto-download after short delay
+        setTimeout(() => startDownload(), 600);
+      }
+
+      // Force uppercase
+      codeInput.addEventListener('input', () => {
+        codeInput.value = codeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      });
+
+      downloadBtn.addEventListener('click', startDownload);
+
+      codeInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') startDownload();
+      });
+
+      function startDownload() {
+        const code = codeInput.value.trim().toUpperCase();
+
+        if (code.length !== 6) {
+          showStatus('Please enter a 6-character code', 'error');
+          return;
+        }
+
+        showStatus('Connecting…', '');
+        downloadBtn.disabled = true;
+
+        // First check status
+        fetch('/status/' + code)
+          .then(r => r.json())
+          .then(data => {
+            if (data.status === 'expired') {
+              showStatus('This code has expired', 'error');
+              downloadBtn.disabled = false;
+              return;
+            }
+
+            // Trigger download
+            showStatus('Downloading: ' + (data.fileName || 'ebook') + '…', 'success');
+            window.location.href = '/download/' + code;
+
+            setTimeout(() => {
+              showStatus('Download started!', 'success');
+              downloadBtn.disabled = false;
+            }, 2000);
+          })
+          .catch(() => {
+            showStatus('Connection error. Try again.', 'error');
+            downloadBtn.disabled = false;
+          });
+      }
+
+      function showStatus(msg, type) {
+        statusEl.textContent = msg;
+        statusEl.className = 'kobo-status' + (type ? ' ' + type : '');
+      }
+    })();
+  </script>
+
+</body>
+</html>
