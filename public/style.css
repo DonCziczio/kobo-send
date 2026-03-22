@@ -102,6 +102,57 @@ body::before {
   font-weight: 300;
 }
 
+/* ─── Kobo Instruction Box ─────────────────────────── */
+.kobo-instruction {
+  margin-bottom: 32px;
+  padding: 18px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  animation: fadeUp 0.5s ease-out 0.2s both;
+}
+
+.kobo-instruction-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.kobo-instruction-icon {
+  font-size: 1.2rem;
+}
+
+.kobo-instruction-url {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--bg-primary);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  word-break: break-all;
+  cursor: pointer;
+  user-select: all;
+  transition: var(--transition);
+  margin-bottom: 12px;
+}
+
+.kobo-instruction-url:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.btn-copy-url {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+}
+
 /* ─── Sections / Views ────────────────────────────── */
 .view {
   display: none;
@@ -397,6 +448,23 @@ body::before {
 
 .qr-container canvas {
   display: block;
+}
+
+.kobo-url-display {
+  margin-top: 14px;
+}
+
+.kobo-url-display a {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  word-break: break-all;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.kobo-url-display a:hover {
+  color: var(--accent);
 }
 
 /* ─── Status indicator ────────────────────────────── */

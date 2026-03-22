@@ -17,6 +17,18 @@
       <p>Drop an ebook, get a code, download on Kobo</p>
     </div>
 
+    <!-- Kobo instruction -->
+    <div class="kobo-instruction">
+      <div class="kobo-instruction-header">
+        <span class="kobo-instruction-icon">📱</span>
+        <span>On your Kobo, open the browser and go to:</span>
+      </div>
+      <div class="kobo-instruction-url" id="kobo-base-url" title="Click to copy">
+        kobo-send-production.up.railway.app/kobo
+      </div>
+      <button class="btn btn-copy btn-copy-url" id="btn-copy-url">Copy link</button>
+    </div>
+
     <!-- ════════ VIEW: UPLOAD ════════ -->
     <div id="view-upload" class="view active">
 
@@ -62,6 +74,9 @@
         <div class="qr-label">or scan with your device</div>
         <div class="qr-container">
           <canvas id="qr-canvas"></canvas>
+        </div>
+        <div class="kobo-url-display">
+          <a id="kobo-url" href="#" target="_blank" rel="noopener"></a>
         </div>
       </div>
 

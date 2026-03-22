@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   KOBO SEND — Frontend Logic
+   KOBO SEND — Frontend Logic (Railway-ready)
    ═══════════════════════════════════════════════════════════ */
 
 (function () {
@@ -19,11 +19,14 @@
   const btnSend = document.getElementById('btn-send');
   const codeDisplay = document.getElementById('code-display');
   const btnCopy = document.getElementById('btn-copy');
+  const btnCopyUrl = document.getElementById('btn-copy-url');
+  const koboBaseUrl = document.getElementById('kobo-base-url');
   const qrCanvas = document.getElementById('qr-canvas');
   const statusBadge = document.getElementById('status-badge');
   const statusText = document.getElementById('status-text');
   const expiryTimer = document.getElementById('expiry-timer');
   const btnAnother = document.getElementById('btn-another');
+  const koboUrl = document.getElementById('kobo-url');
 
   // ─── State ───────────────────────────────────────────
   let selectedFile = null;
@@ -62,7 +65,6 @@
 
   // ─── File Selection ─────────────────────────────────
   function selectFile(file) {
-    // Check size
     if (file.size > 100 * 1024 * 1024) {
       alert('File too large. Maximum size is 100 MB.');
       return;
@@ -136,18 +138,26 @@
 
   // ─── Code View ──────────────────────────────────────
   function showCodeView(data) {
-    // Switch views
     viewUpload.classList.remove('active');
     viewCode.classList.add('active');
 
     // Show code
     codeDisplay.textContent = data.code;
 
-    // Generate QR
-    const koboUrl = window.location.origin + '/kobo?code=' + data.code;
+    // Build Kobo URL dynamically (works on Railway, localhost, anywhere)
+    const base = data.baseUrl || window.location.origin;
+    const koboLink = base + '/kobo?code=' + data.code;
+
+    // Show the URL for manual entry on Kobo
+    if (koboUrl) {
+      koboUrl.textContent = koboLink;
+      koboUrl.href = koboLink;
+    }
+
+    // Generate QR with real URL
     new QRious({
       element: qrCanvas,
-      value: koboUrl,
+      value: koboLink,
       size: 180,
       backgroundAlpha: 0,
       foreground: '#111',
@@ -176,7 +186,6 @@
         btnCopy.classList.remove('copied');
       }, 2000);
     }).catch(() => {
-      // Fallback
       const ta = document.createElement('textarea');
       ta.value = currentCode;
       document.body.appendChild(ta);
@@ -191,6 +200,37 @@
       }, 2000);
     });
   });
+
+  // ─── Copy Kobo URL ────────────────────────────────
+  if (btnCopyUrl && koboBaseUrl) {
+    btnCopyUrl.addEventListener('click', () => {
+      const url = window.location.origin + '/kobo';
+      navigator.clipboard.writeText(url).then(() => {
+        btnCopyUrl.textContent = '✓ Copied!';
+        btnCopyUrl.classList.add('copied');
+        setTimeout(() => {
+          btnCopyUrl.textContent = 'Copy link';
+          btnCopyUrl.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btnCopyUrl.textContent = '✓ Copied!';
+        btnCopyUrl.classList.add('copied');
+        setTimeout(() => {
+          btnCopyUrl.textContent = 'Copy link';
+          btnCopyUrl.classList.remove('copied');
+        }, 2000);
+      });
+    });
+
+    // Set the URL text dynamically
+    koboBaseUrl.textContent = window.location.host + '/kobo';
+  }
 
   // ─── Polling ────────────────────────────────────────
   function startPolling(code) {
@@ -210,7 +250,7 @@
           }
         })
         .catch(() => {
-          // Silently retry on network failure
+          // Silently retry
         });
     }, 2000);
   }
@@ -264,7 +304,6 @@
     stopPolling();
     stopTimer();
 
-    // Reset
     selectedFile = null;
     currentCode = null;
     expiresAt = null;
@@ -275,7 +314,6 @@
     btnSend.disabled = true;
     btnSend.innerHTML = 'Send to Kobo';
 
-    // Switch views
     viewCode.classList.remove('active');
     viewUpload.classList.add('active');
   });
