@@ -286,6 +286,71 @@ body::before {
   color: var(--danger);
 }
 
+/* ─── Convert Toggle ──────────────────────────────── */
+.convert-toggle {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+  animation: fadeUp 0.3s ease-out;
+}
+
+.convert-toggle.visible {
+  display: flex;
+}
+
+.convert-toggle:hover {
+  border-color: var(--border-hover);
+}
+
+.convert-toggle input[type="checkbox"] {
+  display: none;
+}
+
+.convert-toggle-check {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--text-muted);
+  border-radius: 6px;
+  flex-shrink: 0;
+  position: relative;
+  transition: var(--transition);
+}
+
+.convert-toggle input:checked ~ .convert-toggle-check {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.convert-toggle input:checked ~ .convert-toggle-check::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #0a0a0f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.convert-toggle-label {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.convert-toggle-label small {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
 /* ─── Buttons ─────────────────────────────────────── */
 .btn {
   display: inline-flex;
@@ -496,6 +561,15 @@ body::before {
 .status-badge[data-status="waiting"] .status-dot {
   background: var(--warning);
   animation: pulse 2s ease-in-out infinite;
+}
+
+.status-badge[data-status="converting"] .status-dot {
+  background: #818cf8;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.status-badge[data-status="converting"] {
+  border-color: rgba(129, 140, 248, 0.3);
 }
 
 .status-badge[data-status="connected"] {

@@ -27,6 +27,8 @@
   const expiryTimer = document.getElementById('expiry-timer');
   const btnAnother = document.getElementById('btn-another');
   const koboUrl = document.getElementById('kobo-url');
+  const convertCheckbox = document.getElementById('convert-checkbox');
+  const convertToggle = document.getElementById('convert-toggle');
 
   // ─── State ───────────────────────────────────────────
   let selectedFile = null;
@@ -74,6 +76,7 @@
     fileName.textContent = file.name;
     fileSize.textContent = formatSize(file.size);
     fileInfo.classList.add('visible');
+    if (convertToggle) convertToggle.classList.add('visible');
     btnSend.disabled = false;
   }
 
@@ -81,6 +84,7 @@
     selectedFile = null;
     fileInput.value = '';
     fileInfo.classList.remove('visible');
+    if (convertToggle) convertToggle.classList.remove('visible');
     btnSend.disabled = true;
   });
 
@@ -94,6 +98,7 @@
     const formData = new FormData();
     formData.append('file', file);
 
+    const kepub = convertCheckbox && convertCheckbox.checked ? '1' : '0';
     const xhr = new XMLHttpRequest();
 
     // Show progress
@@ -126,7 +131,7 @@
       resetUploadUI();
     });
 
-    xhr.open('POST', '/upload');
+    xhr.open('POST', '/upload?kepub=' + kepub);
     xhr.send(formData);
   }
 
@@ -165,7 +170,11 @@
     });
 
     // Set status
-    setStatus('waiting', 'Waiting for device…');
+    if (data.converting) {
+      setStatus('converting', 'Converting to Kobo EPUB…');
+    } else {
+      setStatus('waiting', 'Waiting for device…');
+    }
 
     // Start polling
     startPolling(data.code);
@@ -240,8 +249,15 @@
       fetch('/status/' + code)
         .then(r => r.json())
         .then(data => {
-          if (data.status === 'connected') {
+          if (data.status === 'converting') {
+            setStatus('converting', 'Converting to Kobo EPUB…');
+          } else if (data.status === 'waiting') {
+            setStatus('waiting', 'Waiting for device…');
+          } else if (data.status === 'connected') {
             setStatus('connected', 'Connected — downloading!');
+            stopPolling();
+          } else if (data.status === 'error') {
+            setStatus('expired', 'Conversion failed: ' + (data.error || 'unknown error'));
             stopPolling();
           } else if (data.status === 'expired') {
             setStatus('expired', 'Code expired');
@@ -309,6 +325,7 @@
     expiresAt = null;
     fileInput.value = '';
     fileInfo.classList.remove('visible');
+    if (convertToggle) convertToggle.classList.remove('visible');
     progressBar.classList.remove('visible');
     progressFill.style.width = '0%';
     btnSend.disabled = true;
